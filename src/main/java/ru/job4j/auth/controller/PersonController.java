@@ -1,6 +1,7 @@
 package ru.job4j.auth.controller;
 
 import lombok.AllArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -13,6 +14,7 @@ import java.util.Optional;
 @RestController
 @RequestMapping("/person")
 @AllArgsConstructor
+@Slf4j
 public class PersonController {
     private final PersonService persons;
 
@@ -39,18 +41,32 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<Void> update(@RequestBody Person person) {
-        var isUpdated = this.persons.update(person);
-        return (isUpdated)
-                ? ResponseEntity.ok().build()
-                : ResponseEntity.of(Optional.empty());
+    public ResponseEntity<HttpStatus> update(@RequestBody Person person) {
+        ResponseEntity<HttpStatus> response = ResponseEntity.ok(HttpStatus.OK);
+        try {
+            this.persons.save(person);
+        } catch (Exception e) {
+            response = ResponseEntity.of(
+                    Optional.of(HttpStatus.NOT_FOUND)
+            );
+            log.error("UNABLE TO UPDATE PERSON", e);
+        }
+        return response;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable int id) {
+    public ResponseEntity<HttpStatus> delete(@PathVariable int id) {
+        ResponseEntity<HttpStatus> response = ResponseEntity.ok(HttpStatus.OK);
         Person person = new Person();
         person.setId(id);
-        this.persons.delete(person);
-        return ResponseEntity.ok().build();
+        try {
+            this.persons.delete(person);
+        } catch (Exception e) {
+            response = ResponseEntity.of(
+                    Optional.of(HttpStatus.BAD_REQUEST)
+            );
+            log.error("UNABLE TO DELETE PERSON", e);
+        }
+        return response;
     }
 }
