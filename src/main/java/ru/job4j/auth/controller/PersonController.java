@@ -9,7 +9,6 @@ import ru.job4j.auth.domain.Person;
 import ru.job4j.auth.sevice.PersonService;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/person")
@@ -41,30 +40,26 @@ public class PersonController {
     }
 
     @PutMapping("/")
-    public ResponseEntity<HttpStatus> update(@RequestBody Person person) {
-        ResponseEntity<HttpStatus> response = ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<String> update(@RequestBody Person person) {
+        ResponseEntity<String> response = new ResponseEntity<>("Person updated", HttpStatus.OK);
         try {
             this.persons.save(person);
         } catch (Exception e) {
-            response = ResponseEntity.of(
-                    Optional.of(HttpStatus.NOT_FOUND)
-            );
+            response = new ResponseEntity<>("Unable to update person", HttpStatus.NOT_FOUND);
             log.error("UNABLE TO UPDATE PERSON", e);
         }
         return response;
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<HttpStatus> delete(@PathVariable int id) {
-        ResponseEntity<HttpStatus> response = ResponseEntity.ok(HttpStatus.OK);
+    public ResponseEntity<String> delete(@PathVariable int id) {
         Person person = new Person();
         person.setId(id);
+        ResponseEntity<String> response = new ResponseEntity<>("Person deleted", HttpStatus.OK);
         try {
             this.persons.delete(person);
         } catch (Exception e) {
-            response = ResponseEntity.of(
-                    Optional.of(HttpStatus.BAD_REQUEST)
-            );
+            response = new ResponseEntity<>("Unable to delete person", HttpStatus.NOT_FOUND);
             log.error("UNABLE TO DELETE PERSON", e);
         }
         return response;
