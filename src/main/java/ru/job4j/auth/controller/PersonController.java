@@ -1,21 +1,20 @@
 package ru.job4j.auth.controller;
 
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.job4j.auth.domain.Person;
-import ru.job4j.auth.repository.PersonRepository;
+import ru.job4j.auth.sevice.PersonService;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/person")
+@AllArgsConstructor
 public class PersonController {
-    private final PersonRepository persons;
-
-    public PersonController(final PersonRepository persons) {
-        this.persons = persons;
-    }
+    private final PersonService persons;
 
     @GetMapping("/")
     public List<Person> findAll() {
@@ -25,7 +24,7 @@ public class PersonController {
     @GetMapping("/{id}")
     public ResponseEntity<Person> findById(@PathVariable int id) {
         var person = this.persons.findById(id);
-        return new ResponseEntity<Person>(
+        return new ResponseEntity<>(
                 person.orElse(new Person()),
                 person.isPresent() ? HttpStatus.OK : HttpStatus.NOT_FOUND
         );
@@ -33,7 +32,7 @@ public class PersonController {
 
     @PostMapping("/")
     public ResponseEntity<Person> create(@RequestBody Person person) {
-        return new ResponseEntity<Person>(
+        return new ResponseEntity<>(
                 this.persons.save(person),
                 HttpStatus.CREATED
         );
@@ -41,8 +40,10 @@ public class PersonController {
 
     @PutMapping("/")
     public ResponseEntity<Void> update(@RequestBody Person person) {
-        this.persons.save(person);
-        return ResponseEntity.ok().build();
+        var isUpdated = this.persons.update(person);
+        return (isUpdated)
+                ? ResponseEntity.ok().build()
+                : ResponseEntity.of(Optional.empty());
     }
 
     @DeleteMapping("/{id}")
