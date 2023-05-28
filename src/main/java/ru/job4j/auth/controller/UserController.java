@@ -59,7 +59,7 @@ public class UserController {
                 new ResponseEntity<>(
                         "Person deleted",
                         HttpStatus.OK);
-        if (!users.delete(id)) {
+        if (!users.deleteById(id)) {
             response = new ResponseEntity<>(
                     "Unable to delete Person with id: " + id,
                     HttpStatus.NOT_FOUND);

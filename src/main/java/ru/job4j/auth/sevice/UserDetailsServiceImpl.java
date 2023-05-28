@@ -59,7 +59,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public boolean delete(int id) {
+    public boolean deleteById(int id) {
         var result = false;
         if (users.findById(id).isPresent()) {
             result = users.deleteById(id);
