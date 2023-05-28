@@ -41,26 +41,26 @@ public class PersonController {
 
     @PutMapping("/")
     public ResponseEntity<String> update(@RequestBody Person person) {
-        ResponseEntity<String> response = new ResponseEntity<>("Person updated", HttpStatus.OK);
-        try {
-            this.persons.save(person);
-        } catch (Exception e) {
-            response = new ResponseEntity<>("Unable to update person", HttpStatus.NOT_FOUND);
-            log.error("UNABLE TO UPDATE PERSON", e);
+        ResponseEntity<String> response =
+                new ResponseEntity<>("Person updated", HttpStatus.OK);
+        if (!persons.update(person)) {
+            response = new ResponseEntity<>(
+                    "Unable to update person",
+                    HttpStatus.NOT_FOUND);
         }
         return response;
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<String> delete(@PathVariable int id) {
-        Person person = new Person();
-        person.setId(id);
-        ResponseEntity<String> response = new ResponseEntity<>("Person deleted", HttpStatus.OK);
-        try {
-            this.persons.delete(person);
-        } catch (Exception e) {
-            response = new ResponseEntity<>("Unable to delete person", HttpStatus.NOT_FOUND);
-            log.error("UNABLE TO DELETE PERSON", e);
+        ResponseEntity<String> response =
+                new ResponseEntity<>(
+                        "Person deleted",
+                        HttpStatus.OK);
+        if (!persons.delete(id)) {
+            response = new ResponseEntity<>(
+                    "Unable to delete Person with id: " + id,
+                    HttpStatus.NOT_FOUND);
         }
         return response;
     }

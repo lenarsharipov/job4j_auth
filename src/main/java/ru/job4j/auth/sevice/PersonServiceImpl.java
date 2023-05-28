@@ -31,8 +31,22 @@ public class PersonServiceImpl implements PersonService {
     }
 
     @Override
-    public void delete(Person person) {
-        personRepository.delete(person);
+    public boolean update(Person person) {
+        var result = false;
+        if (personRepository.findById(person.getId()).isPresent()) {
+            result = true;
+            personRepository.save(person);
+        }
+        return result;
+    }
+
+    @Override
+    public boolean delete(int id) {
+        var result = false;
+        if (personRepository.findById(id).isPresent()) {
+            result = personRepository.deleteById(id);
+        }
+        return result;
     }
 
 }
