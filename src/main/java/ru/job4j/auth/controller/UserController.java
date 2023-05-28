@@ -33,6 +33,7 @@ public class UserController {
 
     @PostMapping("/")
     public ResponseEntity<User> create(@RequestBody User user) {
+        user.setPassword(encoder.encode(user.getPassword()));
         return new ResponseEntity<>(
                 this.users.save(user),
                 HttpStatus.CREATED
@@ -43,6 +44,7 @@ public class UserController {
     public ResponseEntity<String> update(@RequestBody User user) {
         ResponseEntity<String> response =
                 new ResponseEntity<>("Person updated", HttpStatus.OK);
+        user.setPassword(encoder.encode(user.getPassword()));
         if (!users.update(user)) {
             response = new ResponseEntity<>(
                     "Unable to update person",
