@@ -62,9 +62,15 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     public boolean deleteById(int id) {
         var result = false;
         if (users.findById(id).isPresent()) {
-            result = users.deleteById(id);
+            users.deleteById(id);
+            result = true;
         }
         return result;
+    }
+
+    @Override
+    public Optional<User> findByLogin(String login) {
+        return users.findByLogin(login);
     }
 
 }

@@ -16,4 +16,6 @@ public interface UserService {
 
     boolean deleteById(int id);
 
+    Optional<User> findByLogin(String login);
+
 }
