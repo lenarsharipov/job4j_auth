@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
@@ -27,8 +28,11 @@ public class UserController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/all")
-    public List<Person> findAll() {
-        return this.users.findAll();
+    public ResponseEntity<List<Person>> findAll() {
+        var body = this.users.findAll();
+        return new ResponseEntity<>(
+                body,
+                HttpStatus.OK);
     }
 
     @GetMapping("/{id}")
@@ -105,7 +109,7 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody Person person) {
+    public ResponseEntity<Person> signUp(@RequestBody Person person) {
         if (person == null || person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
@@ -120,6 +124,10 @@ public class UserController {
         }
         person.setPassword(encoder.encode(person.getPassword()));
         users.save(person);
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .contentType(MediaType.APPLICATION_JSON)
+                .contentLength(person.toString().length())
+                .body(person);
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})
