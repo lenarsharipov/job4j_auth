@@ -6,7 +6,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import ru.job4j.auth.domain.User;
+import ru.job4j.auth.domain.Person;
 import ru.job4j.auth.repository.UserRepository;
 
 import java.util.List;
@@ -25,7 +25,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
 
     @Override
     public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
-        Optional<User> user = users.findByLogin(login);
+        Optional<Person> user = users.findByLogin(login);
         if (user.isEmpty()) {
             throw new UsernameNotFoundException(login);
         }
@@ -34,26 +34,26 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public List<User> findAll() {
+    public List<Person> findAll() {
         return users.findAll();
     }
 
     @Override
-    public Optional<User> findById(int id) {
+    public Optional<Person> findById(int id) {
         return users.findById(id);
     }
 
     @Override
-    public User save(User user) {
-        return users.save(user);
+    public Person save(Person person) {
+        return users.save(person);
     }
 
     @Override
-    public boolean update(User user) {
+    public boolean update(Person person) {
         var result = false;
-        if (users.findById(user.getId()).isPresent()) {
+        if (users.findById(person.getId()).isPresent()) {
             result = true;
-            users.save(user);
+            users.save(person);
         }
         return result;
     }
@@ -69,7 +69,7 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Optional<User> findByLogin(String login) {
+    public Optional<Person> findByLogin(String login) {
         return users.findByLogin(login);
     }
 

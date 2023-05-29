@@ -8,7 +8,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
-import ru.job4j.auth.domain.User;
+import ru.job4j.auth.domain.Person;
 import ru.job4j.auth.sevice.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -27,12 +27,12 @@ public class UserController {
     private final ObjectMapper objectMapper;
 
     @GetMapping("/all")
-    public List<User> findAll() {
+    public List<Person> findAll() {
         return this.users.findAll();
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<User> findById(@PathVariable int id) {
+    public ResponseEntity<Person> findById(@PathVariable int id) {
         var user = this.users.findById(id)
                 .orElseThrow(() -> new ResponseStatusException(
                         HttpStatus.NOT_FOUND,
@@ -42,38 +42,44 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<User> create(@RequestBody User user) {
-        if (user == null || user.getLogin() == null || user.getPassword() == null) {
+    public ResponseEntity<Person> create(@RequestBody Person person) {
+        if (person == null || person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
-        if (this.users.findByLogin(user.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("Login " + user.getLogin() + " is occupied.");
+        if (this.users.findByLogin(person.getLogin()).isPresent()) {
+            throw new IllegalArgumentException("Login " + person.getLogin() + " is occupied.");
         }
-        if (user.getPassword().length() < 6) {
+        if (person.getLogin().length() < 3) {
+            throw new IllegalArgumentException("Login Should be at least 3 characters length");
+        }
+        if (person.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password Should be at least 6 characters length");
         }
-        user.setPassword(encoder.encode(user.getPassword()));
+        person.setPassword(encoder.encode(person.getPassword()));
         return new ResponseEntity<>(
-                this.users.save(user),
+                this.users.save(person),
                 HttpStatus.CREATED
         );
     }
 
     @PutMapping("/")
-    public ResponseEntity<String> update(@RequestBody User user) {
-        if (user == null || user.getLogin() == null || user.getPassword() == null) {
+    public ResponseEntity<String> update(@RequestBody Person person) {
+        if (person == null || person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
-        if (users.findById(user.getId()).isEmpty()) {
-            throw new IllegalArgumentException("User Not Found By id: " + user.getId());
+        if (users.findById(person.getId()).isEmpty()) {
+            throw new IllegalArgumentException("User Not Found By id: " + person.getId());
         }
-        if (user.getPassword().length() < 6) {
+        if (person.getLogin().length() < 3) {
+            throw new IllegalArgumentException("Login Should be at least 3 characters length");
+        }
+        if (person.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password Should be at least 6 characters length");
         }
         ResponseEntity<String> response =
                 new ResponseEntity<>("Person updated", HttpStatus.OK);
-        user.setPassword(encoder.encode(user.getPassword()));
-        if (!users.update(user)) {
+        person.setPassword(encoder.encode(person.getPassword()));
+        if (!users.update(person)) {
             response = new ResponseEntity<>(
                     "Unable to update person",
                     HttpStatus.NOT_FOUND);
@@ -99,18 +105,21 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public void signUp(@RequestBody User user) {
-        if (user == null || user.getLogin() == null || user.getPassword() == null) {
+    public void signUp(@RequestBody Person person) {
+        if (person == null || person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
-        if (this.users.findByLogin(user.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("Login " + user.getLogin() + " is occupied.");
+        if (this.users.findByLogin(person.getLogin()).isPresent()) {
+            throw new IllegalArgumentException("Login " + person.getLogin() + " is occupied.");
         }
-        if (user.getPassword().length() < 6) {
+        if (person.getLogin().length() < 3) {
+            throw new IllegalArgumentException("Login Should be at least 3 characters length");
+        }
+        if (person.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password Should be at least 6 characters length");
         }
-        user.setPassword(encoder.encode(user.getPassword()));
-        users.save(user);
+        person.setPassword(encoder.encode(person.getPassword()));
+        users.save(person);
     }
 
     @ExceptionHandler(value = {IllegalArgumentException.class})

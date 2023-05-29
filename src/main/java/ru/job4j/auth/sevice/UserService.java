@@ -1,21 +1,21 @@
 package ru.job4j.auth.sevice;
 
-import ru.job4j.auth.domain.User;
+import ru.job4j.auth.domain.Person;
 
 import java.util.List;
 import java.util.Optional;
 
 public interface UserService {
-    Optional<User> findById(int id);
+    Optional<Person> findById(int id);
 
-    List<User> findAll();
+    List<Person> findAll();
 
-    User save(User user);
+    Person save(Person person);
 
-    boolean update(User user);
+    boolean update(Person person);
 
     boolean deleteById(int id);
 
-    Optional<User> findByLogin(String login);
+    Optional<Person> findByLogin(String login);
 
 }
