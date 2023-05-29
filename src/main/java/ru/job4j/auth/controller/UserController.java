@@ -10,6 +10,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.server.ResponseStatusException;
 import ru.job4j.auth.domain.Person;
+import ru.job4j.auth.dto.PersonDTO;
 import ru.job4j.auth.sevice.UserService;
 
 import javax.servlet.http.HttpServletRequest;
@@ -46,27 +47,27 @@ public class UserController {
     }
 
     @PostMapping("/")
-    public ResponseEntity<Person> create(@RequestBody Person person) {
-        if (person == null || person.getLogin() == null || person.getPassword() == null) {
+    public ResponseEntity<Person> create(@RequestBody PersonDTO personDTO) {
+        if (personDTO == null || personDTO.getLogin() == null || personDTO.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
-        if (this.users.findByLogin(person.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("Login " + person.getLogin() + " is occupied.");
+        if (this.users.findByLogin(personDTO.getLogin()).isPresent()) {
+            throw new IllegalArgumentException("Login " + personDTO.getLogin() + " is occupied.");
         }
-        if (person.getLogin().length() < 3) {
+        if (personDTO.getLogin().length() < 3) {
             throw new IllegalArgumentException("Login Should be at least 3 characters length");
         }
-        if (person.getPassword().length() < 6) {
+        if (personDTO.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password Should be at least 6 characters length");
         }
-        person.setPassword(encoder.encode(person.getPassword()));
+        personDTO.setPassword(encoder.encode(personDTO.getPassword()));
         return new ResponseEntity<>(
-                this.users.save(person),
+                this.users.save(personDTO),
                 HttpStatus.CREATED
         );
     }
 
-    @PutMapping("/")
+    @PatchMapping("/")
     public ResponseEntity<String> update(@RequestBody Person person) {
         if (person == null || person.getLogin() == null || person.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
@@ -109,21 +110,21 @@ public class UserController {
     }
 
     @PostMapping("/sign-up")
-    public ResponseEntity<Person> signUp(@RequestBody Person person) {
-        if (person == null || person.getLogin() == null || person.getPassword() == null) {
+    public ResponseEntity<Person> signUp(@RequestBody PersonDTO personDTO) {
+        if (personDTO == null || personDTO.getLogin() == null || personDTO.getPassword() == null) {
             throw new NullPointerException("Login And Password Should Not Be Empty");
         }
-        if (this.users.findByLogin(person.getLogin()).isPresent()) {
-            throw new IllegalArgumentException("Login " + person.getLogin() + " is occupied.");
+        if (this.users.findByLogin(personDTO.getLogin()).isPresent()) {
+            throw new IllegalArgumentException("Login " + personDTO.getLogin() + " is occupied.");
         }
-        if (person.getLogin().length() < 3) {
+        if (personDTO.getLogin().length() < 3) {
             throw new IllegalArgumentException("Login Should be at least 3 characters length");
         }
-        if (person.getPassword().length() < 6) {
+        if (personDTO.getPassword().length() < 6) {
             throw new IllegalArgumentException("Password Should be at least 6 characters length");
         }
-        person.setPassword(encoder.encode(person.getPassword()));
-        users.save(person);
+        personDTO.setPassword(encoder.encode(personDTO.getPassword()));
+        var person = users.save(personDTO);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .contentType(MediaType.APPLICATION_JSON)
                 .contentLength(person.toString().length())

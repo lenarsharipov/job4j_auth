@@ -7,6 +7,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import ru.job4j.auth.domain.Person;
+import ru.job4j.auth.dto.PersonDTO;
 import ru.job4j.auth.repository.UserRepository;
 
 import java.util.List;
@@ -44,7 +45,10 @@ public class UserDetailsServiceImpl implements UserDetailsService, UserService {
     }
 
     @Override
-    public Person save(Person person) {
+    public Person save(PersonDTO personDTO) {
+        var person = new Person();
+        person.setLogin(personDTO.getLogin());
+        person.setPassword(personDTO.getPassword());
         return users.save(person);
     }
 
